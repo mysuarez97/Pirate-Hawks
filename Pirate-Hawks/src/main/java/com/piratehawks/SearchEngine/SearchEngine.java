@@ -17,11 +17,9 @@ public class SearchEngine {
     public static File searchFolder = new File(directoryToSearch);
     public static String searchFilePath = "";
     
-   /* public void main (String[] args) {
-        
-        String directoryToSearch = "C:\\Docs";
+    public static void main(String[] args) {      
         fileSearchMethod(directoryToSearch);
-    }*/
+    }
     
     public static void fileSearchMethod(String directoryToSearch) {
 
@@ -43,11 +41,7 @@ public class SearchEngine {
                     }
                     in.close(); //close the file loop back to folder and search next file
                 }
-                catch (Exception e){ //try catch required for FileInputStream
-                    //if (!searchFilePath.contains(".txt")){
-                        //empty on purpose, otherwise anything not .txt would print error
-                   // }
-                   // else               
+                catch (Exception e){ //try catch required for FileInputStream           
                         System.err.println("Error: File not found"); 
                     }
             }
@@ -66,33 +60,29 @@ public class SearchEngine {
         for (File subfile : SubFolderFiles){
             // for each file (subfile in SubFolderFiles array
             String searchSubFolderPath = subfile.getAbsolutePath(); //get the path of the next file                        
-                if (subfile.isFile()) {
-                    // if it is a file do this.
-                    try {
-                        FileInputStream fstream = new FileInputStream(searchSubFolderPath); // makes sure it's a good path
-                        DataInputStream in = new DataInputStream(fstream); // open the file.
-                        BufferedReader br = new BufferedReader(new InputStreamReader(in)); //buffered reader for the file               
-                        String strLine;
+            if (subfile.isFile()) {
+                // if it is a file do this.
+                try {
+                    FileInputStream fstream = new FileInputStream(searchSubFolderPath); // makes sure it's a good path
+                    DataInputStream in = new DataInputStream(fstream); // open the file.
+                    BufferedReader br = new BufferedReader(new InputStreamReader(in)); //buffered reader for the file               
+                    String strLine;
                
-                        while((strLine = br.readLine()) != null) { //read each line until end of of file
-                            if (strLine.contains(wordToFind)){ //look for designated word.
-                                System.out.println(subfile.getName()); //print the file name
-                            }
+                    while((strLine = br.readLine()) != null) { //read each line until end of of file
+                        if (strLine.contains(wordToFind)){ //look for designated word.
+                            System.out.println(subfile.getName()); //print the file name
                         }
-                    in.close(); //close the file loop back to folder and search next file            
                     }
-                    catch (Exception e){ //try catch required for FileInputStream
-                        if (!searchFilePath.contains(".txt")){
-                            //empty on purpose, otherwise anything not .txt would print error
-                        }
-                        else               
-                            System.err.println("Error: File not found"); 
-                    }             
+                in.close(); //close the file loop back to folder and search next file            
                 }
-                else if (subfile.isDirectory()){
-                    //recursive call of this method to search all sub folders.
-                    searchSubFolder(searchSubFolderPath);
-                }
+                catch (Exception e){ //try catch required for FileInputStream        
+                    System.err.println("Error: File not found"); 
+                }             
             }
-        }        
-    }
+            else if (subfile.isDirectory()){
+                //recursive call of this method to search all sub folders.
+                searchSubFolder(searchSubFolderPath);
+            }
+        }
+    }     
+}
