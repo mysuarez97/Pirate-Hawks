@@ -17,11 +17,11 @@ public class SearchEngine {
     public static File searchFolder = new File(directoryToSearch);
     public static String searchFilePath = "";
     
-    public void main (String[] args) {
+   /* public void main (String[] args) {
         
-        //String directoryToSearch = "C:\\Docs";
+        String directoryToSearch = "C:\\Docs";
         fileSearchMethod(directoryToSearch);
-    }  
+    }*/
     
     public static void fileSearchMethod(String directoryToSearch) {
 
