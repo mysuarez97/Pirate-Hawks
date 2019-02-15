@@ -11,7 +11,6 @@ import javax.swing.*;
  *
  * */
 
-
 public class userInterface extends JFrame{
 
     public static void userWindow()
@@ -50,7 +49,7 @@ public class userInterface extends JFrame{
         userScreen.add(infoButton);
         infoButton.setVisible(true);
 
-        //textfield
+        //textfield for the search bar
         JTextField textField = new JTextField(20);
         textField.setBounds(150,70,190,25);
         userScreen.add(textField);
@@ -69,8 +68,13 @@ public class userInterface extends JFrame{
         dropList.setBounds(215,100,250,30);
         dropList.setVisible(true);
         userScreen.add(dropList);
-        //text area
 
+        //text area
+        JTextArea textArea=new JTextArea(5,20);
+        userScreen.add(textArea);
+        textArea.setBounds(10,150,450,300);
+        textArea.setEditable(false);
+        textArea.setVisible(true);
     }
 
     public static void main(String[] args)
