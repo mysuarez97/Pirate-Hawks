@@ -1,11 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.piratehawks.SearchEngine;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.*;
 /*
  * Search Engine project assignment # 3
@@ -13,10 +10,12 @@ import javax.swing.*;
  * by Myrlene Suarez
  *    Sam
  *    Jeff
- *    Agnes
- *
- * */
-
+ *    Agnes Benitez
+ *        Updated 2/17/2019 - Merge userInterface file in a Java Project
+ *                            Removed unused java import
+ *                            Added a class Action ActionListener                               
+ * 
+*/
 
 public class userInterface extends JFrame{
 
@@ -29,9 +28,18 @@ public class userInterface extends JFrame{
         title=new JLabel("Search Engine");
         title.setBounds(100,10, 300,50);
         title.setFont(new Font("Arial", Font.BOLD,36));
+        
+        //textfield for the search bar
+        // Move textField so the cursor points to it.
+        
+        JTextField textField = new JTextField(20);
+        textField.setBounds(150,70,190,25);
+        userScreen.add(textField);
+        textField.setVisible(true);
+        
         subtitle=new JLabel("Search Terms:");
         subtitle.setBounds(50,70, 100,25);
-        index=new JLabel("Number of indexs:");
+        index=new JLabel("Number of indexes:");
         index.setBounds(200,500,120,24);
         userScreen.add(title); userScreen.add(subtitle);userScreen.add(index);
         userScreen.setSize(500,600);
@@ -55,13 +63,8 @@ public class userInterface extends JFrame{
         infoButton.setBounds(380,500,100,25);
         userScreen.add(infoButton);
         infoButton.setVisible(true);
-
-        //textfield
-        JTextField textField = new JTextField(20);
-        textField.setBounds(150,70,190,25);
-        userScreen.add(textField);
-        textField.setVisible(true);
-
+        infoButton.addActionListener((ActionListener) new Action()); 
+                
         //drop list for the AND, OR, and EXACT phrases
         JLabel label= new JLabel("Pick a Search term and click Search:");
         label.setBounds(0,100,250,25);
@@ -70,13 +73,18 @@ public class userInterface extends JFrame{
 
         String [] searchTerms ={" ","All of the Search Terms", "Any of the Search Terms","Exact Phrase"};
 
-        JComboBox<String> dropList = new JComboBox<String>(searchTerms);
+        JComboBox<String> dropList = new JComboBox<>(searchTerms);
 
         dropList.setBounds(215,100,250,30);
         dropList.setVisible(true);
         userScreen.add(dropList);
-        //text area
 
+        //text area
+        JTextArea textArea=new JTextArea(5,20);
+        userScreen.add(textArea);
+        textArea.setBounds(10,150,450,300);
+        textArea.setEditable(false);
+        textArea.setVisible(true);
     }
 
     public static void main(String[] args)
@@ -85,4 +93,23 @@ public class userInterface extends JFrame{
         userWindow();
     }
 
+   static class Action implements ActionListener{
+
+        //private Action() {
+        //    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //}
+
+        @Override
+        public void actionPerformed(ActionEvent arg0) {
+            //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            JFrame frame2 = new JFrame("About");
+            frame2.setVisible(true);
+            frame2.setBounds(100,10, 400,200);
+            JLabel label = new JLabel("Search Engine 1.1 Project #3. Written by Pirate-Hawks Team");
+            JPanel panel = new JPanel();
+            frame2.add(panel);
+            panel.add(label);
+        }
+    
+   }
 }
