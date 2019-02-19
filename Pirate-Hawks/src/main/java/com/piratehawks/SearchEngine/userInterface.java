@@ -57,6 +57,7 @@ public class userInterface extends JFrame{
         maintenanceButton.setBounds(10,500,120,25);
         userScreen.add(maintenanceButton);
         maintenanceButton.setVisible(true);
+        maintenanceButton.addActionListener((ActionListener) new Maintenance());
 
         //about button
         JButton infoButton = new JButton("About");
