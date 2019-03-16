@@ -4,6 +4,16 @@ package com.piratehawks.SearchEngine;
 /*
  * License Info?
  */
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.Desktop;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * A stubbed out maintenance GUI for Admin.
@@ -13,8 +23,15 @@ public class Maintenance extends javax.swing.JFrame {
     /**
      * Creates new form Maintenance
      */
+    private final JFileChooser openFileChooser;
+    private BufferedImage originalBI;
+    
     public Maintenance() {
         initComponents();
+        
+        openFileChooser= new JFileChooser();
+        openFileChooser.setCurrentDirectory(new File("c:\\temp"));
+        openFileChooser.setFileFilter(new FileNameExtensionFilter("Example","txt"));
     }
 
     /**
@@ -61,10 +78,16 @@ public class Maintenance extends javax.swing.JFrame {
         lblAddFiles.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         lblAddFiles.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         lblAddFiles.setText("Add Files:");
+        
 
         btnAddFiles.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         btnAddFiles.setText("Add");
         btnAddFiles.setToolTipText("Add more files to search");
+        btnAddFiles.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddFilesActionPerformed(evt);
+            }
+        });
 
         lblRemoveFiles.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         lblRemoveFiles.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
@@ -73,6 +96,11 @@ public class Maintenance extends javax.swing.JFrame {
         btnRemoveFiles.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         btnRemoveFiles.setText("Remove");
         btnRemoveFiles.setToolTipText("Remove searchable files");
+        btnRemoveFiles.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRemoveFilesActionPerformed(evt);
+            }
+        });
 
         lblUpdateFiles.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         lblUpdateFiles.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
@@ -81,6 +109,12 @@ public class Maintenance extends javax.swing.JFrame {
         btnUpdateFiles.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         btnUpdateFiles.setText("Update");
         btnUpdateFiles.setToolTipText("Update existing files");
+        btnUpdateFiles.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUpdateFilesActionPerformed(evt);
+            }
+        });
+        
 
         menuFile.setText("File");
         jMenuBar1.add(menuFile);
@@ -139,13 +173,88 @@ public class Maintenance extends javax.swing.JFrame {
                 .addGap(111, 111, 111))
         );
 
-        pack();
+        pack(); 
     }// </editor-fold>                        
 
-    private void btnViewFilesActionPerformed(java.awt.event.ActionEvent evt) {                                             
+    private JLabel messageLabel;
+    private JLabel openFileButton;
+    
+    private void btnViewFilesActionPerformed(ActionEvent evt) {                                             
         // TODO add your handling code here:
-    }                                            
+                //button does a tries to open the file chooser and catches
+        //the error by telling the user the file wasnt choosen
+        // TODO add your handling code here:
+        int returnValue= openFileChooser.showOpenDialog(this);
+        if(returnValue == JFileChooser.APPROVE_OPTION){
+            try{
+                originalBI= ImageIO.read(openFileChooser.getSelectedFile());
+            }catch(IOException ioe){
+                messageLabel.setText("No file choosen");
+            }
+        }
+        else
+        {
+            messageLabel.setText("No file choosen");
+        }
+    }    
+       
 
+        private void btnAddFilesActionPerformed(ActionEvent evt) {                                             
+        // TODO add your handling code here:
+                //button does a tries to open the file chooser and catches
+        //the error by telling the user the file wasnt choosen
+        // TODO add your handling code here:
+        int returnValue= openFileChooser.showOpenDialog(this);
+        if(returnValue == JFileChooser.APPROVE_OPTION){
+            try{
+                originalBI= ImageIO.read(openFileChooser.getSelectedFile());
+            }catch(IOException ioe){
+                messageLabel.setText("No file choosen");
+            }
+        }
+        else
+        {
+            messageLabel.setText("No file choosen");
+        }
+    }   
+        
+        private void btnRemoveFilesActionPerformed(ActionEvent evt) {                                             
+        // TODO add your handling code here:
+                //button does a tries to open the file chooser and catches
+        //the error by telling the user the file wasnt choosen
+        // TODO add your handling code here:
+        int returnValue= openFileChooser.showOpenDialog(this);
+        if(returnValue == JFileChooser.APPROVE_OPTION){
+            try{
+                originalBI= ImageIO.read(openFileChooser.getSelectedFile());
+            }catch(IOException ioe){
+                messageLabel.setText("No file choosen");
+            }
+        }
+        else
+        {
+            messageLabel.setText("No file choosen");
+        }
+    }   
+
+    private void btnUpdateFilesActionPerformed(ActionEvent evt) {                                             
+        // TODO add your handling code here:
+                //button does a tries to open the file chooser and catches
+        //the error by telling the user the file wasnt choosen
+        // TODO add your handling code here:
+        int returnValue= openFileChooser.showOpenDialog(this);
+        if(returnValue == JFileChooser.APPROVE_OPTION){
+            try{
+                originalBI= ImageIO.read(openFileChooser.getSelectedFile());
+            }catch(IOException ioe){
+                messageLabel.setText("No file choosen");
+            }
+        }
+        else
+        {
+            messageLabel.setText("No file choosen");
+        }
+    }
     /**
      * @param args the command line arguments
      */
