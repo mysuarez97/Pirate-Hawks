@@ -4,6 +4,15 @@ package com.piratehawks.SearchEngine;
 /*
  * License Info?
  */
+import javax.xml.*;
+import javax.xml.stream.XMLEventFactory;
+import javax.xml.stream.XMLEventWriter;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.events.XMLEvent;
+import javax.xml.stream.events.StartElement;
+import javax.xml.stream.events.StartDocument;
+import javax.xml.stream.events.Characters;
+import javax.xml.stream.events.EndElement;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -13,7 +22,9 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.Desktop;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
+import java.io.IOException; 
+import java.util.Date;
+import java.io.FileOutputStream;
 
 /**
  * A stubbed out maintenance GUI for Admin.
@@ -25,6 +36,7 @@ public class Maintenance extends javax.swing.JFrame {
      */
     private final JFileChooser openFileChooser;
     private BufferedImage originalBI;
+    
     
     public Maintenance() {
         initComponents();
@@ -65,7 +77,8 @@ public class Maintenance extends javax.swing.JFrame {
         btnViewFiles.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         btnViewFiles.setText("View");
         btnViewFiles.setToolTipText("View searchable files");
-        btnViewFiles.addActionListener(new java.awt.event.ActionListener() {
+        btnViewFiles.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnViewFilesActionPerformed(evt);
             }
@@ -83,7 +96,8 @@ public class Maintenance extends javax.swing.JFrame {
         btnAddFiles.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         btnAddFiles.setText("Add");
         btnAddFiles.setToolTipText("Add more files to search");
-        btnAddFiles.addActionListener(new java.awt.event.ActionListener() {
+        btnAddFiles.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnAddFilesActionPerformed(evt);
             }
@@ -96,7 +110,8 @@ public class Maintenance extends javax.swing.JFrame {
         btnRemoveFiles.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         btnRemoveFiles.setText("Remove");
         btnRemoveFiles.setToolTipText("Remove searchable files");
-        btnRemoveFiles.addActionListener(new java.awt.event.ActionListener() {
+        btnRemoveFiles.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnRemoveFilesActionPerformed(evt);
             }
@@ -109,7 +124,8 @@ public class Maintenance extends javax.swing.JFrame {
         btnUpdateFiles.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         btnUpdateFiles.setText("Update");
         btnUpdateFiles.setToolTipText("Update existing files");
-        btnUpdateFiles.addActionListener(new java.awt.event.ActionListener() {
+        btnUpdateFiles.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnUpdateFilesActionPerformed(evt);
             }
@@ -204,12 +220,43 @@ public class Maintenance extends javax.swing.JFrame {
                 //button does a tries to open the file chooser and catches
         //the error by telling the user the file wasnt choosen
         // TODO add your handling code here:
-        int returnValue= openFileChooser.showOpenDialog(this);
-        if(returnValue == JFileChooser.APPROVE_OPTION){
-            try{
-                originalBI= ImageIO.read(openFileChooser.getSelectedFile());
-            }catch(IOException ioe){
-                messageLabel.setText("No file choosen");
+       // int returnValue= openFileChooser.showOpenDialog(this);
+        //if(returnValue == JFileChooser.APPROVE_OPTION){
+        final JFileChooser fc = new JFileChooser();  
+        int returnValue = fc.showOpenDialog(fc);
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+            File file = fc.getSelectedFile();
+            String fileName = file.getName();
+            String filePath = file.getAbsolutePath();
+            Date dateAdded = new Date();
+            String filesInXML = "C:\\Test\\test.xml";
+            try {
+            
+                FileOutputStream stream = new FileOutputStream(filesInXML); 
+
+                XMLOutputFactory outputFactory = new XMLOutputFactory.newFactory();
+                //create XML Event Writer
+                XMLEventWriter eventWriter = outputFactory.createXMLEventWriter(stream);
+                XMLEventFactory eventFactory = XMLEventFactory.newInstance();
+                XMLEvent end = eventFactory.createDTD("/n");
+                StartDocument startDocument = eventFactory.createStartDocument();
+                eventWriter.add(startDocument);
+                
+                StartElement configStartElement = eventFactory.createStartElement("","", "config");
+                eventWriter.add(configStartElement);
+                eventWriter.add(end);
+                createNode(eventWriter,"fileName", fileName);
+                createNode(eventWriter,"filePath", filePath);
+                createNode(eventWriter, "dateAdded", dateAdded.toString());
+                
+                eventWriter.add(eventFactory.createEndElement("", "", "config"));
+                eventWriter.add(end);
+                //eventWriter.add(eventFactory.createEndDocument());
+                eventWriter.close();
+            }
+            catch(Exception err) {
+                messageLabel.setText("Not working right now");
+                
             }
         }
         else
@@ -217,6 +264,8 @@ public class Maintenance extends javax.swing.JFrame {
             messageLabel.setText("No file choosen");
         }
     }   
+        
+
         
         private void btnRemoveFilesActionPerformed(ActionEvent evt) {                                             
         // TODO add your handling code here:
@@ -235,6 +284,7 @@ public class Maintenance extends javax.swing.JFrame {
         {
             messageLabel.setText("No file choosen");
         }
+        
     }   
 
     private void btnUpdateFilesActionPerformed(ActionEvent evt) {                                             
@@ -255,6 +305,27 @@ public class Maintenance extends javax.swing.JFrame {
             messageLabel.setText("No file choosen");
         }
     }
+    
+        private void createNode(XMLEventWriter eventWriter, String name,
+    String value) throws Exception {
+
+        XMLEventFactory eventFactory = XMLEventFactory.newInstance();
+        XMLEvent end = eventFactory.createDTD("\n");
+        XMLEvent tab = eventFactory.createDTD("\t");
+        // create Start node
+        StartElement sElement = eventFactory.createStartElement("", "", name);
+        eventWriter.add(tab);
+        eventWriter.add(sElement);
+        // create Content
+        Characters characters = eventFactory.createCharacters(value);
+        eventWriter.add(characters);
+        // create End node
+        EndElement eElement = eventFactory.createEndElement("", "", name);
+        eventWriter.add(eElement);
+        eventWriter.add(end);
+
+    }
+
     /**
      * @param args the command line arguments
      */
@@ -284,6 +355,7 @@ public class Maintenance extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 new Maintenance().setVisible(true);
             }
@@ -305,4 +377,3 @@ public class Maintenance extends javax.swing.JFrame {
     private javax.swing.JMenu menuHelp;
     // End of variables declaration                   
 }
-
