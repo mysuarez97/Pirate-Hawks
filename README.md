@@ -1,5 +1,5 @@
 # Pirate-Hawks
-# Group Members: Sam, Myrlene, and Agnes
+# Group Members: Sam, Myrlene, Agnes, Christopher
 Notes:
 
 All files should be initially encoded as UTF-8. This isn't the default for some IDEs, so you should change that in the preferences. Line endings of text files are Windows format (CR-LF). That should be the default in any Windows IDE.
