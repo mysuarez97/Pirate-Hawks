@@ -5,14 +5,21 @@ package com.piratehawks.SearchEngine;
  * License Info?
  */
 import javax.xml.*;
-import javax.xml.stream.XMLEventFactory;
-import javax.xml.stream.XMLEventWriter;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.events.XMLEvent;
-import javax.xml.stream.events.StartElement;
-import javax.xml.stream.events.StartDocument;
-import javax.xml.stream.events.Characters;
-import javax.xml.stream.events.EndElement;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.*;
+import javax.xml.transform.stream.*;
+import javax.xml.transform.dom.*;
+import org.w3c.dom.*;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -25,6 +32,10 @@ import java.io.File;
 import java.io.IOException; 
 import java.util.Date;
 import java.io.FileOutputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.xml.transform.OutputKeys;
+import org.xml.sax.SAXException;
 
 /**
  * A stubbed out maintenance GUI for Admin.
@@ -34,6 +45,7 @@ public class Maintenance extends javax.swing.JFrame {
     /**
      * Creates new form Maintenance
      */
+    public static final String filesInXML = "C:\\Test\\test.xml";
     private final JFileChooser openFileChooser;
     private BufferedImage originalBI;
     
@@ -99,7 +111,11 @@ public class Maintenance extends javax.swing.JFrame {
         btnAddFiles.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAddFilesActionPerformed(evt);
+                try {
+                    btnAddFilesActionPerformed(evt);
+                } catch (IOException ex) {
+                    Logger.getLogger(Maintenance.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
 
@@ -215,7 +231,7 @@ public class Maintenance extends javax.swing.JFrame {
     }    
        
 
-        private void btnAddFilesActionPerformed(ActionEvent evt) {                                             
+        private void btnAddFilesActionPerformed(ActionEvent evt) throws IOException {                                             
         // TODO add your handling code here:
                 //button does a tries to open the file chooser and catches
         //the error by telling the user the file wasnt choosen
@@ -224,49 +240,98 @@ public class Maintenance extends javax.swing.JFrame {
         //if(returnValue == JFileChooser.APPROVE_OPTION){
         final JFileChooser fc = new JFileChooser();  
         int returnValue = fc.showOpenDialog(fc);
+        String filesInXML = "C:\\Test\\test.xml";
+         String[] data = {"file", "fileID", "fileName", "filePath", "dateAdded",
+         "dateModified", "dateRemoved"};
+        
         if (returnValue == JFileChooser.APPROVE_OPTION) {
-            File file = fc.getSelectedFile();
-            String fileName = file.getName();
-            String filePath = file.getAbsolutePath();
-            Date dateAdded = new Date();
-            String filesInXML = "C:\\Test\\test.xml";
-            try {
+            File fileChosen = fc.getSelectedFile();
+            String chosenFileName = fileChosen.getName();
+            String chosenFilePath = fileChosen.getAbsolutePath();
+            Date date_Added = new Date();
             
-                FileOutputStream stream = new FileOutputStream(filesInXML); 
-
-                XMLOutputFactory outputFactory = new XMLOutputFactory.newFactory();
-                //create XML Event Writer
-                XMLEventWriter eventWriter = outputFactory.createXMLEventWriter(stream);
-                XMLEventFactory eventFactory = XMLEventFactory.newInstance();
-                XMLEvent end = eventFactory.createDTD("/n");
-                StartDocument startDocument = eventFactory.createStartDocument();
-                eventWriter.add(startDocument);
-                
-                StartElement configStartElement = eventFactory.createStartElement("","", "config");
-                eventWriter.add(configStartElement);
-                eventWriter.add(end);
-                createNode(eventWriter,"fileName", fileName);
-                createNode(eventWriter,"filePath", filePath);
-                createNode(eventWriter, "dateAdded", dateAdded.toString());
-                
-                eventWriter.add(eventFactory.createEndElement("", "", "config"));
-                eventWriter.add(end);
-                //eventWriter.add(eventFactory.createEndDocument());
-                eventWriter.close();
+            try {
+            DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
+            Document document = documentBuilder.newDocument();
+            
+            // root element
+            Element root = document.createElement("indexedFile");
+            document.appendChild(root);
+ 
+            // file element
+            Element file = document.createElement("file");
+ 
+            root.appendChild(file);
+ 
+            // set an attribute to file element
+            Attr attr = document.createAttribute("id");
+            attr.setValue("0");
+            file.setAttributeNode(attr);
+ 
+            //you can also use staff.setAttribute("id", "1") for this
+            // fileName element
+            Element fileName = document.createElement("fileName");
+            fileName.appendChild(document.createTextNode(chosenFileName));
+            file.appendChild(fileName);
+ 
+            // filePath element
+            Element filePath = document.createElement("filePath");
+            filePath.appendChild(document.createTextNode(chosenFilePath));
+            file.appendChild(filePath);
+ 
+            // dateAdded element
+            Element dateAdded = document.createElement("dateAdded");
+            dateAdded.appendChild(document.createTextNode(date_Added.toString()));
+            file.appendChild(dateAdded);
+ 
+            // department dateModified
+            Element dateModified = document.createElement("dateModified");
+            dateModified.appendChild(document.createTextNode(""));
+            file.appendChild(dateModified);
+            
+            // department dateModified
+            Element dateRemoved = document.createElement("dateRemoved");
+            dateRemoved.appendChild(document.createTextNode(""));
+            file.appendChild(dateRemoved);
+ 
+            // create the xml file
+            //transform the DOM Object to an XML File
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            File xmlFile = new File("C:\\Test\\test1.xml");
+            StreamResult streamResult = new StreamResult(xmlFile);
+            Node node = document.getDocumentElement();
+            DOMSource domSource = new DOMSource(document);
+            transformer.transform(domSource, streamResult);
+            
+            document = documentBuilder.parse(filesInXML);
+            root = document.getDocumentElement();
+            for(int i=0;i<2;i++) {
+                Element element = document.createElement("file");
+                for(int j=0;j<data.length;j++) {
+                Element elementInside = document.createElement(data[j]);
+                Text text = document.createTextNode(data[j]);
+                elementInside.appendChild(text);
+                element.appendChild(elementInside);
+                root.appendChild(element);
+                }
             }
-            catch(Exception err) {
-                messageLabel.setText("Not working right now");
-                
-            }
-        }
-        else
-        {
-            messageLabel.setText("No file choosen");
-        }
-    }   
-        
 
-        
+            transformer.transform(domSource, streamResult);
+
+        } catch (ParserConfigurationException pce) {
+            pce.printStackTrace();
+        } 
+        catch (TransformerException tfe) {
+            tfe.printStackTrace();
+        }   catch (SAXException ex) {
+                Logger.getLogger(Maintenance.class.getName()).log(Level.SEVERE, null, ex);
+            }
+    }
+}   
         private void btnRemoveFilesActionPerformed(ActionEvent evt) {                                             
         // TODO add your handling code here:
                 //button does a tries to open the file chooser and catches
@@ -304,26 +369,6 @@ public class Maintenance extends javax.swing.JFrame {
         {
             messageLabel.setText("No file choosen");
         }
-    }
-    
-        private void createNode(XMLEventWriter eventWriter, String name,
-    String value) throws Exception {
-
-        XMLEventFactory eventFactory = XMLEventFactory.newInstance();
-        XMLEvent end = eventFactory.createDTD("\n");
-        XMLEvent tab = eventFactory.createDTD("\t");
-        // create Start node
-        StartElement sElement = eventFactory.createStartElement("", "", name);
-        eventWriter.add(tab);
-        eventWriter.add(sElement);
-        // create Content
-        Characters characters = eventFactory.createCharacters(value);
-        eventWriter.add(characters);
-        // create End node
-        EndElement eElement = eventFactory.createEndElement("", "", name);
-        eventWriter.add(eElement);
-        eventWriter.add(end);
-
     }
 
     /**
@@ -377,3 +422,4 @@ public class Maintenance extends javax.swing.JFrame {
     private javax.swing.JMenu menuHelp;
     // End of variables declaration                   
 }
+
