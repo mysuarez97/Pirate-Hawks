@@ -1,9 +1,81 @@
+package com.piratehawks.SearchEngine;
+
+
 
 /*
 
  * License Info?
 
  */
+
+import javax.xml.*;
+
+import javax.xml.parsers.DocumentBuilder;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import javax.xml.parsers.ParserConfigurationException;
+
+import javax.xml.transform.Transformer;
+
+import javax.xml.transform.TransformerException;
+
+import javax.xml.transform.TransformerFactory;
+
+import javax.xml.transform.dom.DOMSource;
+
+import javax.xml.transform.stream.StreamResult;
+
+import javax.xml.transform.*;
+
+import javax.xml.transform.stream.*;
+
+import javax.xml.transform.dom.*;
+
+import com.sun.tools.javac.Main;
+import org.w3c.dom.*;
+
+import org.w3c.dom.Attr;
+
+import org.w3c.dom.Document;
+
+import org.w3c.dom.Element;
+
+import javax.imageio.ImageIO;
+
+import javax.swing.*;
+
+import java.awt.event.ActionEvent;
+
+import java.awt.event.ActionListener;
+
+import java.awt.*;
+
+import javax.swing.filechooser.FileNameExtensionFilter;
+
+import java.awt.Desktop;
+
+import java.awt.image.BufferedImage;
+
+import java.io.File;
+
+import java.io.IOException;
+
+import java.nio.file.DirectoryNotEmptyException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Paths;
+import java.util.Date;
+
+import java.io.FileOutputStream;
+
+import java.util.logging.Level;
+
+import java.util.logging.Logger;
+
+import javax.xml.transform.OutputKeys;
+
+import org.xml.sax.SAXException;
 
 
 
@@ -12,33 +84,38 @@
  * A stubbed out maintenance GUI for Admin.
 
  */
-import javax.imageio.ImageIO;
-import javax.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import java.awt.Desktop;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
 
 public class Maintenance extends javax.swing.JFrame {
+
+
 
     /**
 
      * Creates new form Maintenance
 
      */
+
+    public static final String filesInXML = "C:\\Test\\test.xml";
+
     private final JFileChooser openFileChooser;
+
     private BufferedImage originalBI;
 
+
+
+
+
     public Maintenance() {
-    //Opens the file explorer to the example.txt file I
-    //allowed the program to open to only .txt files
+
         initComponents();
+
+
+
         openFileChooser= new JFileChooser();
+
         openFileChooser.setCurrentDirectory(new File("c:\\temp"));
-        openFileChooser.setFileFilter(new FileNameExtensionFilter("Example","txt"));
+
+        openFileChooser.setFileFilter(new FileNameExtensionFilter("Example","xml"));
 
     }
 
@@ -106,7 +183,9 @@ public class Maintenance extends javax.swing.JFrame {
 
         btnViewFiles.setToolTipText("View searchable files");
 
-        btnViewFiles.addActionListener(new java.awt.event.ActionListener() {
+        btnViewFiles.addActionListener(new ActionListener() {
+
+            @Override
 
             public void actionPerformed(java.awt.event.ActionEvent evt) {
 
@@ -134,11 +213,33 @@ public class Maintenance extends javax.swing.JFrame {
 
 
 
+
+
         btnAddFiles.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
         btnAddFiles.setText("Add");
 
         btnAddFiles.setToolTipText("Add more files to search");
+
+        btnAddFiles.addActionListener(new ActionListener() {
+
+            @Override
+
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+
+                try {
+
+                    btnAddFilesActionPerformed(evt);
+
+                } catch (IOException ex) {
+
+                    Logger.getLogger(Maintenance.class.getName()).log(Level.SEVERE, null, ex);
+
+                }
+
+            }
+
+        });
 
 
 
@@ -156,6 +257,18 @@ public class Maintenance extends javax.swing.JFrame {
 
         btnRemoveFiles.setToolTipText("Remove searchable files");
 
+        btnRemoveFiles.addActionListener(new ActionListener() {
+
+            @Override
+
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+
+                btnRemoveFilesActionPerformed(evt);
+
+            }
+
+        });
+
 
 
         lblUpdateFiles.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
@@ -171,6 +284,20 @@ public class Maintenance extends javax.swing.JFrame {
         btnUpdateFiles.setText("Update");
 
         btnUpdateFiles.setToolTipText("Update existing files");
+
+        btnUpdateFiles.addActionListener(new ActionListener() {
+
+            @Override
+
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+
+                btnUpdateFilesActionPerformed(evt);
+
+            }
+
+        });
+
+
 
 
 
@@ -292,25 +419,324 @@ public class Maintenance extends javax.swing.JFrame {
 
     }// </editor-fold>
 
-    //private message label tells the user that no file was choosen
+
+
     private JLabel messageLabel;
+
     private JLabel openFileButton;
-    private void btnViewFilesActionPerformed(java.awt.event.ActionEvent evt) {
-        //button does a tries to open the file chooser and catches
-        //the error by telling the user the file wasnt choosen
+
+
+
+    private void btnViewFilesActionPerformed(ActionEvent evt) {
+
         // TODO add your handling code here:
+
+        //button does a tries to open the file chooser and catches
+
+        //the error by telling the user the file wasnt choosen
+
+        // TODO add your handling code here:
+
         int returnValue= openFileChooser.showOpenDialog(this);
+
         if(returnValue == JFileChooser.APPROVE_OPTION){
+
             try{
+
                 originalBI= ImageIO.read(openFileChooser.getSelectedFile());
+
             }catch(IOException ioe){
+
                 messageLabel.setText("No file choosen");
+
             }
+
         }
+
         else
+
         {
+
             messageLabel.setText("No file choosen");
+
         }
+
+    }
+
+
+
+
+
+    private void btnAddFilesActionPerformed(ActionEvent evt) throws IOException {
+
+        // TODO add your handling code here:
+
+        //button does a tries to open the file chooser and catches
+
+        //the error by telling the user the file wasnt choosen
+
+        // TODO add your handling code here:
+
+        // int returnValue= openFileChooser.showOpenDialog(this);
+
+        //if(returnValue == JFileChooser.APPROVE_OPTION){
+
+        final JFileChooser fc = new JFileChooser();
+
+        int returnValue = fc.showOpenDialog(fc);
+
+        String filesInXML = "C:\\Test\\test.xml";
+
+        String[] data = {"file", "fileID", "fileName", "filePath", "dateAdded",
+
+                "dateModified", "dateRemoved"};
+
+
+
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+
+            File fileChosen = fc.getSelectedFile();
+
+            String chosenFileName = fileChosen.getName();
+
+            String chosenFilePath = fileChosen.getAbsolutePath();
+
+            Date date_Added = new Date();
+
+
+
+            try {
+
+                DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
+
+                DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
+
+                Document document = documentBuilder.newDocument();
+
+
+
+                // root element
+
+                Element root = document.createElement("indexedFile");
+
+                document.appendChild(root);
+
+
+
+                // file element
+
+                Element file = document.createElement("file");
+
+
+
+                root.appendChild(file);
+
+
+
+                // set an attribute to file element
+
+                Attr attr = document.createAttribute("id");
+
+                attr.setValue("0");
+
+                file.setAttributeNode(attr);
+
+
+
+                //you can also use staff.setAttribute("id", "1") for this
+
+                // fileName element
+
+                Element fileName = document.createElement("fileName");
+
+                fileName.appendChild(document.createTextNode(chosenFileName));
+
+                file.appendChild(fileName);
+
+
+
+                // filePath element
+
+                Element filePath = document.createElement("filePath");
+
+                filePath.appendChild(document.createTextNode(chosenFilePath));
+
+                file.appendChild(filePath);
+
+
+
+                // dateAdded element
+
+                Element dateAdded = document.createElement("dateAdded");
+
+                dateAdded.appendChild(document.createTextNode(date_Added.toString()));
+
+                file.appendChild(dateAdded);
+
+
+
+                // department dateModified
+
+                Element dateModified = document.createElement("dateModified");
+
+                dateModified.appendChild(document.createTextNode(""));
+
+                file.appendChild(dateModified);
+
+
+
+                // department dateModified
+
+                Element dateRemoved = document.createElement("dateRemoved");
+
+                dateRemoved.appendChild(document.createTextNode(""));
+
+                file.appendChild(dateRemoved);
+
+
+
+                // create the xml file
+
+                //transform the DOM Object to an XML File
+
+                TransformerFactory transformerFactory = TransformerFactory.newInstance();
+
+                Transformer transformer = transformerFactory.newTransformer();
+
+                transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+
+                transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+
+                File xmlFile = new File("C:\\Test\\test1.xml");
+
+                StreamResult streamResult = new StreamResult(xmlFile);
+
+                Node node = document.getDocumentElement();
+
+                DOMSource domSource = new DOMSource(document);
+
+                transformer.transform(domSource, streamResult);
+
+
+
+                document = documentBuilder.parse(filesInXML);
+
+                root = document.getDocumentElement();
+
+                for(int i=0;i<2;i++) {
+
+                    Element element = document.createElement("file");
+
+                    for(int j=0;j<data.length;j++) {
+
+                        Element elementInside = document.createElement(data[j]);
+
+                        Text text = document.createTextNode(data[j]);
+
+                        elementInside.appendChild(text);
+
+                        element.appendChild(elementInside);
+
+                        root.appendChild(element);
+
+                    }
+
+                }
+
+
+
+                transformer.transform(domSource, streamResult);
+
+
+
+            } catch (ParserConfigurationException pce) {
+
+                pce.printStackTrace();
+
+            }
+
+            catch (TransformerException tfe) {
+
+                tfe.printStackTrace();
+
+            }   catch (SAXException ex) {
+
+                Logger.getLogger(Maintenance.class.getName()).log(Level.SEVERE, null, ex);
+
+            }
+
+        }
+
+    }
+    private JLabel noFileExits;
+    private JLabel directoryEmpty;
+    private JLabel invalidPermissions;
+    private JLabel deletionsSuccessFul;
+    private void btnRemoveFilesActionPerformed(ActionEvent evt) {
+
+        // TODO add your handling code here:
+
+        try
+        {
+            Files.deleteIfExists(Paths.get("C:\\Test\\test1.xml"));
+        }
+        catch(NoSuchFileException e)
+        {
+            noFileExits.setText("No such file/directory does't exists");
+            noFileExits.setVisible(true);
+            noFileExits.setBounds(300,400,100,50);
+        }
+        catch(DirectoryNotEmptyException e)
+        {
+            directoryEmpty.setText("Directory is not empty.");
+            directoryEmpty.setVisible(true);
+            directoryEmpty.setBounds(300,400,100,50);
+        }
+        catch(IOException e)
+        {
+            invalidPermissions.setText("Invalid permissions.");
+            directoryEmpty.setVisible(true);
+            directoryEmpty.setBounds(300,400,100,50);
+        }
+
+        deletionsSuccessFul.setText("Deletion successful.");
+        deletionsSuccessFul.setVisible(true);
+        deletionsSuccessFul.setBounds(300,400,100,50);
+        // TODO add your handling code here:
+
+
+
+    }
+
+
+    private JLabel fileChange;
+    private void btnUpdateFilesActionPerformed(ActionEvent evt){
+
+        // TODO add your handling code here:
+
+        //button does a tries to open the file chooser and catches
+
+        //the error by telling the user the file wasnt choosen
+        String filesInXML = "C:\\Test\\test.xml";
+        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder dBuilder;
+
+        // TODO add your handling code here:
+        try {
+            dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.parse(filesInXML);
+            doc.getDocumentElement().normalize();
+            fileChange.setText("File change since last indexed");
+            fileChange.setVisible(true);
+            fileChange.setBounds(300,500,100,50);
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        } catch (SAXException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
     }
 
@@ -374,10 +800,12 @@ public class Maintenance extends javax.swing.JFrame {
 
         java.awt.EventQueue.invokeLater(new Runnable() {
 
+            @Override
+
             public void run() {
 
-
                 new Maintenance().setVisible(true);
+
             }
 
         });
@@ -415,4 +843,3 @@ public class Maintenance extends javax.swing.JFrame {
     // End of variables declaration
 
 }
-
