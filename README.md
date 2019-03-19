@@ -15,4 +15,4 @@ The team is using the XML schema.
 THe elements are: <element name= 'file' type ='string'/>
                   <element name= 'fileID' type = 'integer'/>
                   <element name='filePath' type = 'string'/>
-                  <element name= 'dateAdded' type = 'string'/>
+                  <element name= 'dateAdded' type = 'string'/>.
