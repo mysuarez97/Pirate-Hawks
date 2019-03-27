@@ -4,11 +4,16 @@
  * and open the template in the editor.
  */
 package com.mycompany.piratehawks;
-
+import java.awt.List;
+import net.proteanit.sql.DbUtils;
+import java.sql.ResultSet;
 import java.sql.*;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.io.File; 
+import javax.swing.*;
+//import org.apache.commons.dbutils.DbUtils;
 
 /**
  *
@@ -17,19 +22,34 @@ import java.util.logging.Logger;
 
 public class Maintenance extends javax.swing.JFrame {
     
-    Connection connection=null; 
+    Connection connection = null; 
+    //private Object table;
+    //private Object sqliteConnection2;
     /**
      * Creates new form Maintenance
-     * @throws java.sql.SQLException
-     * @throws java.lang.ClassNotFoundException
-     */
-    public Maintenance() throws SQLException, ClassNotFoundException {
-        initComponents();
-        
-        // added here
-        Class.forName("org.sqlite.JDBC");
-        connection=sqliteConnection2.dbConnector();
-        
+     //* //@throws java.sql.SQLException*/
+    public Maintenance(){
+        try {
+            initComponents();
+            connection=sqliteConnection2.dbConnector();
+                String query;
+                query = "select PathName, Status from SearchEngine";
+                PreparedStatement pst = null;
+            try {
+                pst = connection.prepareStatement(query);
+            } catch (SQLException ex) {
+                Logger.getLogger(Maintenance.class.getName()).log(Level.SEVERE, null, ex);
+            }
+                ResultSet rs = null;
+            try {
+                rs = pst.executeQuery();
+            } catch (SQLException ex) {
+                Logger.getLogger(Maintenance.class.getName()).log(Level.SEVERE, null, ex);
+            }
+               FilenameTable.setModel(DbUtils.resultSetToTableModel(rs));
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(Maintenance.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -67,30 +87,15 @@ public class Maintenance extends javax.swing.JFrame {
                 {null, null},
                 {null, null},
                 {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
                 {null, null}
             },
             new String [] {
-                "Title 1", "Title 2"
+                "PathName", "Status"
             }
         ));
         FilenameTable.setColumnSelectionAllowed(true);
         jScrollPane1.setViewportView(FilenameTable);
         FilenameTable.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-        if (FilenameTable.getColumnModel().getColumnCount() > 0) {
-            FilenameTable.getColumnModel().getColumn(0).setHeaderValue("Title 1");
-            FilenameTable.getColumnModel().getColumn(1).setHeaderValue("Title 2");
-        }
 
         AddButton.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         AddButton.setLabel("Add File");
@@ -116,6 +121,7 @@ public class Maintenance extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(210, 210, 210)
                 .addComponent(label1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 610, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addGroup(layout.createSequentialGroup()
                 .addGap(59, 59, 59)
                 .addComponent(AddButton, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -130,18 +136,15 @@ public class Maintenance extends javax.swing.JFrame {
                 .addComponent(NumberIndex, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(80, 80, 80)
                 .addComponent(label3, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 610, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(10, 10, 10)
                 .addComponent(label1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(7, 7, 7)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 329, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(28, 28, 28)
+                .addGap(31, 31, 31)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(AddButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(RebuildButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -161,6 +164,10 @@ public class Maintenance extends javax.swing.JFrame {
     private void AddButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddButtonActionPerformed
         // TODO add your handling code here:
          
+    //public class FileChooserDemo { public static void main ( String [] args )
+   
+
+
     }//GEN-LAST:event_AddButtonActionPerformed
 
     /**
@@ -191,15 +198,7 @@ public class Maintenance extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                try {
-                    try {
-                        new Maintenance().setVisible(true);
-                    } catch (ClassNotFoundException ex) {
-                        Logger.getLogger(Maintenance.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                } catch (SQLException ex) {
-                    Logger.getLogger(Maintenance.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                new Maintenance().setVisible(true);
             }
         });
     }
