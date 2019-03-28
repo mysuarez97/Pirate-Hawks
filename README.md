@@ -10,9 +10,7 @@ We will use Canvas email to communicate.
 
 Package and class names must be agreed upon.
 
-Everyone must create their own branch from the master branch. The head of each member's branch will be merged into the master branch for grading. The project's final version should receive a Git tag 'SearchEngine Project-Data”.
-The team is using the XML schema.
-THe elements are: <element name= 'file' type ='string'/>
-                  <element name= 'fileID' type = 'integer'/>
-                  <element name='filePath' type = 'string'/>
-                  <element name= 'dateAdded' type = 'string'/>.
+Everyone must create their own branch from the master branch. The head of each member's branch will be merged into the master branch for grading. The project's final version should receive a Git tag '“SearchEngine Project - Data”.
+We will be using SQLiteManager. Download sqlite-jdbc 3.15.1.jar (to enable a java application to interact with a database) and rs2xml (a jar library that can be used to make the result set of a query useful as input for the table model)
+Database Name: FilenameDB.sqlite
+Create Table [SearchEngine](RecordNum integer NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,PathName text,DateAdded date,Status text)
