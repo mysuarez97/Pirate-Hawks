@@ -22,7 +22,7 @@ public class sqliteConnection2 {
 		{
 			Class.forName("org.sqlite.JDBC");
 			Connection conn = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\Agnes B\\eclipse-workspace1\\FilenameDB.sqlite");
-			JOptionPane.showMessageDialog(null,"Database Connection Successful");
+			//JOptionPane.showMessageDialog(null,"Database Connection Successful");
 			return conn; 
 		}catch (HeadlessException | SQLException e)
 		{
