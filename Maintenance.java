@@ -34,27 +34,10 @@ public class Maintenance extends javax.swing.JFrame {
      * Creates new form Maintenance
      //* //@throws java.sql.SQLException*/
     public Maintenance(){
-        try {
-            initComponents();
-            connection=sqliteConnection2.dbConnector();
-                String query;
-                query = "select PathName, Status from SearchEngine";
-                PreparedStatement pst = null;
-            try {
-                pst = connection.prepareStatement(query);
-            } catch (SQLException ex) {
-                Logger.getLogger(Maintenance.class.getName()).log(Level.SEVERE, null, ex);
-            }
-                ResultSet rs = null;
-            try {
-                rs = pst.executeQuery();
-            } catch (SQLException ex) {
-                Logger.getLogger(Maintenance.class.getName()).log(Level.SEVERE, null, ex);
-            }
-               FilenameTable.setModel(DbUtils.resultSetToTableModel(rs));
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Maintenance.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        initComponents();
+        newquery();
+        //newCount();
+       
     }
 
     /**
@@ -101,6 +84,11 @@ public class Maintenance extends javax.swing.JFrame {
             }
         ));
         FilenameTable.setColumnSelectionAllowed(true);
+        FilenameTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                FilenameTableMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(FilenameTable);
         FilenameTable.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 
@@ -118,6 +106,11 @@ public class Maintenance extends javax.swing.JFrame {
         });
 
         RebuildButton.setLabel("Rebuild Out-of-Date");
+        RebuildButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                RebuildButtonActionPerformed(evt);
+            }
+        });
 
         RemoveButton.setLabel("Remove Selected Files");
         RemoveButton.addActionListener(new java.awt.event.ActionListener() {
@@ -216,14 +209,18 @@ public class Maintenance extends javax.swing.JFrame {
          
     try { 
          
-    String query = "Insert into SearchEngine (RecordNum,PathName,DateAdded,Status) values (?,?,CURRENT_TIMESTAMP)" ;
-            //pst.setInt (1, default);
+    String query = "Insert into SearchEngine (rowid,PathName,DateAdded,Status) values (NULL,?,CURRENT_TIMESTAMP,?)" ;
+    
+    //pst.setInt (1, default);
             try (PreparedStatement pst = connection.prepareStatement(query)) {
-                pst.setString(1, jTextDir.getText());
+                pst.setString(1, jTextDir.getText());              
                 pst.setString(2,indexStatus);
-                
+                              
                 pst.execute();
+                JOptionPane.showMessageDialog(null,"Directory Added!");
                 pst.close();
+                
+                newquery();
             }
     }catch (SQLException e)
     {
@@ -242,25 +239,67 @@ public class Maintenance extends javax.swing.JFrame {
 
     private void RemoveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RemoveButtonActionPerformed
         // TODO add your handling code here:
-    //int column = 0;
-    //int row;
-    //    row = table.getSelectedRow();
-    //String value;
-    //    value = table.getModel().getValueAt(row, column).toString();
-       String query = "delete from SearchEngine where RecordNum = ?";
-        try {
+        String query = "delete from SearchEngine where Pathname=?";
         try (PreparedStatement pst = connection.prepareStatement(query)) {
-            boolean execute = pst.execute();
-        }
-        } catch (SQLException ex) {
-            Logger.getLogger(Maintenance.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        
-        
+                     
+            pst.setString(1, jTextDir.getText()); 
+                              
+            pst.execute();
+            JOptionPane.showMessageDialog(null,"Filename Deleted!");
+            String TextDir="";
+            String text = jTextDir.getText();
+            newquery();
+             //pst.close();
+                
+               
+    }catch (SQLException e)
+    {
+    }
+    
+        //pst.setString(1, jTextDir.getText());
+      // String query = "delete from SearchEngine where Pathname=?";
+       // try {
+      //     PreparedStatement pst = connection.prepareStatement(query));  
+      //     pst.execute();
+      //  }
+      //  } catch (SQLException ex) {
+      //      Logger.getLogger(Maintenance.class.getName()).log(Level.SEVERE, null, ex);
+       // }
+     
         
         
     }//GEN-LAST:event_RemoveButtonActionPerformed
+
+    private void FilenameTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_FilenameTableMouseClicked
+        // TODO add your handling code here:
+        try{
+	    int row=FilenameTable.getSelectedRow(); 		
+	    String Table_Click=(FilenameTable.getModel().getValueAt(row, 0)).toString();
+	    String query="select * from SearchEngine where Pathname='"+Table_Click+"' ";
+	    PreparedStatement pst=connection.prepareStatement(query);
+	    ResultSet rs=pst.executeQuery();
+	    while (rs.next())
+	    {
+                String dir1;
+                dir1 = rs.getString("Pathname");
+                jTextDir.setText(dir1);    
+	     }
+            // pst.close(); //<editor-fold defaultstate="collapsed" desc="comment">
+            
+        }catch (SQLException e)
+//</editor-fold>
+	 {
+    }	         
+        
+        
+        
+    }//GEN-LAST:event_FilenameTableMouseClicked
+
+    private void RebuildButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RebuildButtonActionPerformed
+        // TODO add your handling code here:
+        newquery();
+        JOptionPane.showMessageDialog(null,"Rebuild Index!");
+    }//GEN-LAST:event_RebuildButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -308,6 +347,38 @@ public class Maintenance extends javax.swing.JFrame {
     private java.awt.Label label2;
     private java.awt.Label label3;
     // End of variables declaration//GEN-END:variables
+
+    private void newquery() {
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+           // initComponents();
+            connection=sqliteConnection2.dbConnector();
+                String query;
+                query = "select PathName, Status from SearchEngine";
+                PreparedStatement pst = null;
+                
+            try {
+                pst = connection.prepareStatement(query);
+            } catch (SQLException ex) {
+                Logger.getLogger(Maintenance.class.getName()).log(Level.SEVERE, null, ex);
+            }
+                ResultSet rs = null;
+            try {
+                rs = pst.executeQuery();
+            } catch (SQLException ex) {
+                Logger.getLogger(Maintenance.class.getName()).log(Level.SEVERE, null, ex);
+            }
+               FilenameTable.setModel(DbUtils.resultSetToTableModel(rs));
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(Maintenance.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void newCount() {
+      //  throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            
+     
+    }
 
  
 }
