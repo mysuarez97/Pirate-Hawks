@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.io.File; 
 import java.io.ObjectInputFilter.Status;
+import java.text.SimpleDateFormat;
 import javax.swing.*;
 import javax.swing.JFileChooser;
 import java.time.LocalDate;
@@ -23,6 +24,8 @@ import java.time.LocalDate;
 /**
  *
  * @author Agnes B
+ * 3/31/19 Added DateModified field in database, 
+ *         display query sorted by pathname
  */
 
 public class Maintenance extends javax.swing.JFrame {
@@ -35,9 +38,9 @@ public class Maintenance extends javax.swing.JFrame {
      //* //@throws java.sql.SQLException*/
     public Maintenance(){
         initComponents();
-        newquery();
-        //newCount();
-       
+        
+         newquery();
+               
     }
 
     /**
@@ -56,10 +59,11 @@ public class Maintenance extends javax.swing.JFrame {
         RebuildButton = new java.awt.Button();
         RemoveButton = new java.awt.Button();
         label2 = new java.awt.Label();
-        NumberIndex = new java.awt.TextField();
         label3 = new java.awt.Label();
         jTextDir = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        varCounter = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Search Engine Index Maintenance");
@@ -69,6 +73,8 @@ public class Maintenance extends javax.swing.JFrame {
 
         FilenameTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
+                {null, null},
+                {null, null},
                 {null, null},
                 {null, null},
                 {null, null},
@@ -121,7 +127,6 @@ public class Maintenance extends javax.swing.JFrame {
 
         label2.setText("Number of files indexed:");
 
-        label3.setFont(new java.awt.Font("Dialog", 1, 10)); // NOI18N
         label3.setText("Search Engine Version 1.0");
 
         jTextDir.addActionListener(new java.awt.event.ActionListener() {
@@ -137,35 +142,38 @@ public class Maintenance extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addGap(72, 72, 72)
+                .addComponent(AddButton, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(68, 68, 68)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(RebuildButton, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(60, 60, 60)
+                        .addComponent(RemoveButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(label2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 138, Short.MAX_VALUE)
+                        .addComponent(label3, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE))))
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(210, 210, 210)
                                 .addComponent(label1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(72, 72, 72)
-                                .addComponent(AddButton, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(68, 68, 68)
-                                .addComponent(RebuildButton, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(60, 60, 60)
-                                .addComponent(RemoveButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addContainerGap()
+                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jTextDir, javax.swing.GroupLayout.PREFERRED_SIZE, 476, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(210, 210, 210)
-                                .addComponent(label2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(8, 8, 8)
-                                .addComponent(NumberIndex, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(80, 80, 80)
-                                .addComponent(label3, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 92, Short.MAX_VALUE))
-                    .addComponent(jScrollPane1))
+                                .addGap(192, 192, 192)
+                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(176, 176, 176)
+                                .addComponent(varCounter, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextDir, javax.swing.GroupLayout.PREFERRED_SIZE, 476, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -173,8 +181,8 @@ public class Maintenance extends javax.swing.JFrame {
                 .addGap(10, 10, 10)
                 .addComponent(label1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(7, 7, 7)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 265, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(54, 54, 54)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(26, 26, 26)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextDir, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel1))
@@ -183,12 +191,16 @@ public class Maintenance extends javax.swing.JFrame {
                     .addComponent(AddButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(RebuildButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(RemoveButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(16, 16, 16)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(label2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(NumberIndex, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(10, 10, 10)
+                        .addGap(16, 16, 16)
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(varCounter, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(label2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
                         .addComponent(label3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
         );
 
@@ -198,29 +210,44 @@ public class Maintenance extends javax.swing.JFrame {
     private void AddButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddButtonActionPerformed
         // TODO add your handling code here:
         
-        LocalDate today = LocalDate.now();
+       // LocalDate today = LocalDate.now();
         String indexStatus = "Indexed";
-        
+        long millisec;
         JFileChooser chooser = new JFileChooser();
         chooser.showOpenDialog(null);
         File f = chooser.getSelectedFile();
-        String filename = f.getAbsolutePath();
-        jTextDir.setText(filename);     
-         
+        String filename;
+        filename = f.getAbsolutePath();   // to get the pathnem
+        millisec = f.lastModified();      // for date Modified
+        jTextDir.setText(filename);       // to display the pathname 
+        
+        //To check the date format from database because the one stored has
+        //a date with type long (example: 1548078825936)
+        //SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+        //System.out.println("After Format : " + sdf.format(millisec));
+	
+               
     try { 
          
-    String query = "Insert into SearchEngine (rowid,PathName,DateAdded,Status) values (NULL,?,CURRENT_TIMESTAMP,?)" ;
+    String query = "Insert into SearchEngine (rowid,PathName,DateAdded,Status,DateModified) values (NULL,?,CURRENT_TIMESTAMP,?,?)" ;
     
     //pst.setInt (1, default);
             try (PreparedStatement pst = connection.prepareStatement(query)) {
                 pst.setString(1, jTextDir.getText());              
                 pst.setString(2,indexStatus);
-                              
+                pst.setLong(3,millisec);
+                
+                //Date d = new Date(millisec);
+                //pst.setLong(3,millisec);
+                
                 pst.execute();
-                JOptionPane.showMessageDialog(null,"Directory Added!");
+                
+                JOptionPane.showMessageDialog(null,"Filename Added!");
+                
                 pst.close();
                 
                 newquery();
+               // varCounter.setText(String.valueOf(numRecords));
             }
     }catch (SQLException e)
     {
@@ -247,33 +274,24 @@ public class Maintenance extends javax.swing.JFrame {
             pst.execute();
             JOptionPane.showMessageDialog(null,"Filename Deleted!");
             String TextDir="";
-            String text = jTextDir.getText();
+            String text;
+            text = jTextDir.getText();
             newquery();
+           
              //pst.close();
                 
                
     }catch (SQLException e)
     {
     }
-    
-        //pst.setString(1, jTextDir.getText());
-      // String query = "delete from SearchEngine where Pathname=?";
-       // try {
-      //     PreparedStatement pst = connection.prepareStatement(query));  
-      //     pst.execute();
-      //  }
-      //  } catch (SQLException ex) {
-      //      Logger.getLogger(Maintenance.class.getName()).log(Level.SEVERE, null, ex);
-       // }
-     
-        
-        
+                    
     }//GEN-LAST:event_RemoveButtonActionPerformed
 
     private void FilenameTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_FilenameTableMouseClicked
         // TODO add your handling code here:
+        
         try{
-	    int row=FilenameTable.getSelectedRow(); 		
+            int row=FilenameTable.getSelectedRow(); 		
 	    String Table_Click=(FilenameTable.getModel().getValueAt(row, 0)).toString();
 	    String query="select * from SearchEngine where Pathname='"+Table_Click+"' ";
 	    PreparedStatement pst=connection.prepareStatement(query);
@@ -282,8 +300,9 @@ public class Maintenance extends javax.swing.JFrame {
 	    {
                 String dir1;
                 dir1 = rs.getString("Pathname");
-                jTextDir.setText(dir1);    
-	     }
+                jTextDir.setText(dir1); 
+                       
+            }
             // pst.close(); //<editor-fold defaultstate="collapsed" desc="comment">
             
         }catch (SQLException e)
@@ -337,15 +356,16 @@ public class Maintenance extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private java.awt.Button AddButton;
     private javax.swing.JTable FilenameTable;
-    private java.awt.TextField NumberIndex;
     private java.awt.Button RebuildButton;
     private java.awt.Button RemoveButton;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField jTextDir;
     private java.awt.Label label1;
     private java.awt.Label label2;
     private java.awt.Label label3;
+    private javax.swing.JLabel varCounter;
     // End of variables declaration//GEN-END:variables
 
     private void newquery() {
@@ -354,7 +374,7 @@ public class Maintenance extends javax.swing.JFrame {
            // initComponents();
             connection=sqliteConnection2.dbConnector();
                 String query;
-                query = "select PathName, Status from SearchEngine";
+                query = "select PathName, Status from SearchEngine ORDER BY PathName";
                 PreparedStatement pst = null;
                 
             try {
@@ -374,11 +394,6 @@ public class Maintenance extends javax.swing.JFrame {
         }
     }
 
-    private void newCount() {
-      //  throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            
      
-    }
-
  
 }
