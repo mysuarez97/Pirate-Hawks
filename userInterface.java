@@ -6,19 +6,48 @@
 
 package com.mycompany.piratehawks;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import net.proteanit.sql.DbUtils;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.util.Enumeration;
+import javax.swing.AbstractButton;
+import javax.swing.ButtonGroup;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
  * @author Agnes B
+ * 3/31/19 Added for AND/OR/ALL search terms,spaces, and (.,) only
  */
 public class userInterface extends javax.swing.JFrame {
     String SearchTerm;  //AND/OR CONDITION
+    String varText;
+    String varTerm;
     
+     
+    
+    
+    Connection connection = null; 
     
     /** Creates new form userInterface */
     public userInterface() {
+        
+        
         initComponents();
+        
+          
+        
+        
+        
     }
 
     /** This method is called from within the constructor to
@@ -43,13 +72,13 @@ public class userInterface extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         searchText = new java.awt.TextField();
         searchButton = new java.awt.Button();
-        jRadioButton1 = new javax.swing.JRadioButton();
+        andRadioButton = new javax.swing.JRadioButton();
         jRadioButton2 = new javax.swing.JRadioButton();
         jRadioButton3 = new javax.swing.JRadioButton();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTable2 = new javax.swing.JTable();
-        button1 = new java.awt.Button();
-        button2 = new java.awt.Button();
+        Filename = new javax.swing.JTable();
+        maintenanceButton = new java.awt.Button();
+        aboutButton = new java.awt.Button();
         label3 = new java.awt.Label();
         counter1 = new java.awt.Label();
 
@@ -112,22 +141,42 @@ public class userInterface extends javax.swing.JFrame {
 
         searchButton.setLabel("Search");
         searchButton.setName(" "); // NOI18N
+        searchButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                searchButtonActionPerformed(evt);
+            }
+        });
 
-        buttonGroup1.add(jRadioButton1);
-        jRadioButton1.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        jRadioButton1.setText("All of the Search Terms");
+        buttonGroup1.add(andRadioButton);
+        andRadioButton.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        andRadioButton.setText("All of the Search Terms");
+        andRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                andRadioButtonActionPerformed(evt);
+            }
+        });
 
         buttonGroup1.add(jRadioButton2);
         jRadioButton2.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jRadioButton2.setSelected(true);
         jRadioButton2.setText("Any of the Search Terms");
+        jRadioButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRadioButton2ActionPerformed(evt);
+            }
+        });
 
         buttonGroup1.add(jRadioButton3);
         jRadioButton3.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jRadioButton3.setText("Exact Phrase");
         jRadioButton3.setName("ButtonGroup1"); // NOI18N
+        jRadioButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRadioButton3ActionPerformed(evt);
+            }
+        });
 
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+        Filename.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null},
                 {null},
@@ -144,19 +193,19 @@ public class userInterface extends javax.swing.JFrame {
                 "Matching Files"
             }
         ));
-        jScrollPane2.setViewportView(jTable2);
+        jScrollPane2.setViewportView(Filename);
 
-        button1.setLabel("Maintenance");
-        button1.addMouseListener(new java.awt.event.MouseAdapter() {
+        maintenanceButton.setLabel("Maintenance");
+        maintenanceButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                button1MouseClicked(evt);
+                maintenanceButtonMouseClicked(evt);
             }
         });
 
-        button2.setLabel("About");
-        button2.addActionListener(new java.awt.event.ActionListener() {
+        aboutButton.setLabel("About");
+        aboutButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                button2ActionPerformed(evt);
+                aboutButtonActionPerformed(evt);
             }
         });
 
@@ -185,7 +234,7 @@ public class userInterface extends javax.swing.JFrame {
                         .addContainerGap(26, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jRadioButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(andRadioButton, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(28, 28, 28)
                         .addComponent(jRadioButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(28, 28, 28)
@@ -196,9 +245,9 @@ public class userInterface extends javax.swing.JFrame {
                         .addContainerGap())))
             .addGroup(layout.createSequentialGroup()
                 .addGap(42, 42, 42)
-                .addComponent(button1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(maintenanceButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(button2, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(aboutButton, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(65, 65, 65))
             .addGroup(layout.createSequentialGroup()
                 .addGap(205, 205, 205)
@@ -219,7 +268,7 @@ public class userInterface extends javax.swing.JFrame {
                     .addComponent(searchButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jRadioButton1)
+                    .addComponent(andRadioButton)
                     .addComponent(jRadioButton2)
                     .addComponent(jRadioButton3))
                 .addGap(34, 34, 34)
@@ -228,8 +277,8 @@ public class userInterface extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(button1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(button2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(maintenanceButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(aboutButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(5, 5, 5)
                         .addComponent(label3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(counter1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -238,19 +287,105 @@ public class userInterface extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void button1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_button1MouseClicked
+    private void maintenanceButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_maintenanceButtonMouseClicked
         // TODO add your handling code here:
         // Click button to go to Maintenance Form
         Maintenance maint = new Maintenance();
         maint.setVisible(true);
 
-    }//GEN-LAST:event_button1MouseClicked
+    }//GEN-LAST:event_maintenanceButtonMouseClicked
 
-    private void button2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button2ActionPerformed
+    private void aboutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutButtonActionPerformed
         // TODO add your handling code here:
         
     JOptionPane.showMessageDialog(null,"Search Engine Version 1-Written by PirateHawks Team");
-    }//GEN-LAST:event_button2ActionPerformed
+    }//GEN-LAST:event_aboutButtonActionPerformed
+
+    @SuppressWarnings("empty-statement")
+    private void andRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_andRadioButtonActionPerformed
+        // Button - All of the Search Terms
+        // TODO add your handling code here:
+        //JOptionPane.showMessageDialog(null,"Database Connection Successful");
+         varTerm="AND";
+    }//GEN-LAST:event_andRadioButtonActionPerformed
+
+    //private void myFind() {
+    //        if (m.find( )) {
+    //           //System.out.println("Found value: " + m.group(0) );
+     //          //System.out.println("Found value: " + m.group(1) );
+    //           //System.out.println("Found value: " + m.group(2) );
+    //           //System.out.println("MATCH");
+    //           userQuery(); 
+    //           //counter1 = table.getRowCount();
+    //           //System.out.println(counter1);
+    //           
+    //        }else {
+    //           // CLEAR TABLE
+    //            //DefaultTableModel tMOdel = (DefaultTableModel) Filename.getModel();
+    //            //tMOdel.setRowCount(0);
+    //            //Filename.setModel(new DefaultTableModel());
+    //            
+    //            //((DefaultTableModel)jTable3.getModel()).setNumRows(0);
+    //          //System.out.println("NO MATCH"); 
+    //          JOptionPane.showMessageDialog(null,"No Match!");
+    //       }
+   // }
+    
+    private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchButtonActionPerformed
+       //test for spaces, and/or/all terms with (.,) conditions        
+       if ("".equals(searchText.getText())){
+            JOptionPane.showMessageDialog(null,"No Matching Files!");
+             return;
+        }
+       
+        if ("AND".equals(varTerm)){
+               
+            varText = searchText.getText();   
+            String pattern;
+            //pattern = "(.*)(,*)";
+            pattern = "(.,)";
+            // Create a Pattern object
+            Pattern r = Pattern.compile(pattern);
+
+             // Now create matcher object.
+            Matcher m = r.matcher(varText);
+            
+           //myFind(); 
+           
+           if (m.find( )) {
+                userQuery(); 
+               
+           }else {
+                varText = "";
+                JOptionPane.showMessageDialog(null,"No Match!");
+           }
+       }else if ("OR".equals(varTerm)){
+           
+           JOptionPane.showMessageDialog(null,"ANY OF THE SEARCH TERMS:No Matching Files");
+           varText = "";
+       }else {
+           JOptionPane.showMessageDialog(null,"EXACT PHRASE: No Matching Files ");
+           varText = "";    
+        }
+                  
+    }//GEN-LAST:event_searchButtonActionPerformed
+
+    private void jRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton2ActionPerformed
+        
+        varTerm="OR";
+        
+        Filename.setModel(new DefaultTableModel());
+        searchText.setText("");
+        varText = "";
+    }//GEN-LAST:event_jRadioButton2ActionPerformed
+
+    private void jRadioButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton3ActionPerformed
+        varTerm="ALL";
+                
+        Filename.setModel(new DefaultTableModel());
+        searchText.setText("");  
+        
+    }//GEN-LAST:event_jRadioButton3ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -271,6 +406,12 @@ public class userInterface extends javax.swing.JFrame {
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(userInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        
+       //  Added here:*******************
+       
+      
+        
+        
         //</editor-fold>
         
         //</editor-fold>
@@ -278,12 +419,17 @@ public class userInterface extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
             new userInterface().setVisible(true);
+            
+             
+            
         });
     }
-
+    
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private java.awt.Button button1;
-    private java.awt.Button button2;
+    private javax.swing.JTable Filename;
+    private java.awt.Button aboutButton;
+    public javax.swing.JRadioButton andRadioButton;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.ButtonGroup buttonGroup2;
     private javax.swing.ButtonGroup buttonGroup3;
@@ -294,16 +440,48 @@ public class userInterface extends javax.swing.JFrame {
     private javax.swing.JFrame jFrame4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JRadioButton jRadioButton1;
-    private javax.swing.JRadioButton jRadioButton2;
-    private javax.swing.JRadioButton jRadioButton3;
+    public javax.swing.JRadioButton jRadioButton2;
+    public javax.swing.JRadioButton jRadioButton3;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTable jTable2;
     private java.awt.Label label1;
     private java.awt.Label label2;
     private java.awt.Label label3;
+    private java.awt.Button maintenanceButton;
     private java.awt.Button searchButton;
     private java.awt.TextField searchText;
     // End of variables declaration//GEN-END:variables
+
+    private void userQuery() {
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+           // initComponents();
+            connection=sqliteConnection2.dbConnector();
+                String query;
+                query = "select PathName, Status from SearchEngine ORDER BY PathName";
+                PreparedStatement pst = null;
+                
+            try {
+                pst = connection.prepareStatement(query);
+            } catch (SQLException ex) {
+                Logger.getLogger(Maintenance.class.getName()).log(Level.SEVERE, null, ex);
+            }
+                ResultSet rs = null;
+            try {
+                rs = pst.executeQuery();
+            } catch (SQLException ex) {
+                Logger.getLogger(Maintenance.class.getName()).log(Level.SEVERE, null, ex);
+            }
+               //form table name=FilenameTable
+               Filename.setModel(DbUtils.resultSetToTableModel(rs));
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(Maintenance.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    
+    }
+
+    
+   
+    
+   
 
 }
