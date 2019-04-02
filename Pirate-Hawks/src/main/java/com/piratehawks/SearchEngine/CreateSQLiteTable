@@ -1,0 +1,49 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.piratehawks.SearchEngine;
+
+import java.sql.*;
+/**
+ *
+ * @author Sam
+ */
+public class CreateSQLiteTable {
+    
+
+
+   public static void main( String args[] ) throws SQLException {
+      Connection c = null;
+      Statement stmt = null;
+      
+      try {
+         Class.forName("org.sqlite.JDBC");
+         c = DriverManager.getConnection("jdbc:sqlite:IndexedFiles.db");
+         System.out.println("Opened database successfully");
+
+         stmt = c.createStatement();
+         String sql = "CREATE TABLE IndexedFiles " +
+                        "(ID INT PRIMARY KEY     NOT NULL," +
+                        " FILE_NAME           STRING    NOT NULL, " + 
+                        " FILE_PATH           STRING    NOT NULL, " + 
+                        " DATE_MODIFIED       STRING    NOT NULL, " + 
+                        " STATUS              STRING    NOT NULL)"; 
+         stmt.executeUpdate(sql);
+
+      } catch ( Exception e ) {
+         System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+         System.exit(0);
+      }
+      System.out.println("Table created successfully");
+      
+         stmt = c.createStatement();
+         String sql = "INSERT INTO IndexedFiles (ID,FILE_NAME,FILE_PATH,DATE_MODIFIED,STATUS) " +
+                        "VALUES (1, 'Paul', 32, 'California', 20000.00 );"; 
+         stmt.executeUpdate(sql);
+         stmt.close();
+         c.close();
+   }
+}
+    
