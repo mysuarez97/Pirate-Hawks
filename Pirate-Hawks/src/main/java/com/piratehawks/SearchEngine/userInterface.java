@@ -4,8 +4,11 @@ package com.piratehawks.SearchEngine;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import javax.swing.*;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /*
  * Search Engine project assignment # 3
@@ -20,6 +23,8 @@ import java.util.ArrayList;
  * 
  */
 public class userInterface extends JFrame {
+    
+    public static JTextField textField = new JTextField(20);
 
     public static void userWindow() {
         //sets up the jframe window
@@ -32,7 +37,7 @@ public class userInterface extends JFrame {
 
         //textfield for the search bar
         // Move textField so the cursor points to it.
-        JTextField textField = new JTextField(20);
+        //static JTextField textField = new JTextField(20);
         textField.setBounds(150, 70, 190, 25);
         userScreen.add(textField);
         textField.setVisible(true);
@@ -73,25 +78,25 @@ public class userInterface extends JFrame {
         infoButton.addActionListener((ActionListener) new Action());
 
         //drop list for the AND, OR, and EXACT phrases
-        JLabel label = new JLabel("Pick a Search term and click Search:");
-        label.setBounds(0, 100, 250, 25);
-        label.setVisible(true);
-        userScreen.add(label);
+        JLabel lblSearchTerms = new JLabel("Pick a Search term and click Search:");
+        lblSearchTerms.setBounds(0, 100, 250, 25);
+        lblSearchTerms.setVisible(true);
+        userScreen.add(lblSearchTerms);
 
         String[] searchTerms = {" ", "All of the Search Terms", "Any of the Search Terms", "Exact Phrase"};
 
-        JComboBox<String> dropList = new JComboBox<>(searchTerms);
+        JComboBox<String> searchDropList = new JComboBox<>(searchTerms);
 
-        dropList.setBounds(215, 100, 250, 30);
-        dropList.setVisible(true);
-        userScreen.add(dropList);
+        searchDropList.setBounds(215, 100, 250, 30);
+        searchDropList.setVisible(true);
+        userScreen.add(searchDropList);
 
         //text area
-        JTextArea textArea = new JTextArea(5, 20);
-        userScreen.add(textArea);
-        textArea.setBounds(10, 150, 450, 300);
-        textArea.setEditable(false);
-        textArea.setVisible(true);
+        JTextArea searchText = new JTextArea(5, 20);
+        userScreen.add(searchText);
+        searchText.setBounds(10, 150, 450, 300);
+        searchText.setEditable(false);
+        searchText.setVisible(true);
     }
 
     public static void main(String[] args) {
@@ -129,12 +134,14 @@ public class userInterface extends JFrame {
         static class search implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent a){ 
-            //opens a window with search results
-            JFrame searchWindow = new JFrame("Search Results");
-            searchWindow.setVisible(true);
-            ArrayList searchResult = new ArrayList();
-            //for result in searchResult {
-                
+            try {
+                //opens a pane with search results
+                SearchEngine.userQuery();
+                JOptionPane.showMessageDialog(null, SearchEngine.FilenameTable);
+            } catch (SQLException ex) {
+                Logger.getLogger(userInterface.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
         }
             
    }
