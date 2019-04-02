@@ -1,6 +1,3 @@
-/*
- * Some license info may be nice
- */
 package com.piratehawks.SearchEngine;
 
 import java.awt.Cursor;
@@ -15,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import net.proteanit.sql.DbUtils;
@@ -27,23 +26,26 @@ import org.sqlite.util.*;
  */
 public class SearchEngine {
 
-    public static String directoryToSearch = "C:\\Test\\IndexedFiles.db"; //the path to the directory
-    static String userSearch = userInterface.textField.getText(); //the word(s) to find. input a variable later
+    //public static String directoryToSearch = "C:\\Test\\IndexedFiles.db"; //the path to the directory
+    //static String userSearch = userInterface.textField.getText(); //the word(s) to find. input a variable later
     public static List<String> listOfFiles = new ArrayList<>(); // array list of all files in directory
     
     //File searchFolder = new File(directoryToSearch);
    // public static String searchFilePath = "";
-
-    //static Connection connection;
+    static String SearchTerm;  //AND/OR CONDITION
+    static String varText;
+    static String varTerm;
+    static Connection connection;
     static Statement stmt;
     static JTable FilenameTable = new javax.swing.JTable();
     
+    /*
     public static void main(String[] args) throws SQLException {
 
        JOptionPane.showMessageDialog(null, "This is a test" + userSearch);
-       newquery();
+       userQuery();
        JOptionPane.showMessageDialog(null, listOfFiles);      
-    }
+    }*/
 
     /**
      *
@@ -68,7 +70,83 @@ public class SearchEngine {
         }
     }
 */
+    
+    @SuppressWarnings("null")
+        static void userQuery() throws SQLException {
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            FilenameTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null}
+            },
+            new String [] {
+                "Matching Files"
+            }
+        ));
+            
+        if ("".equals(userInterface.textField.getText())){
+        JOptionPane.showMessageDialog(null,"No Matching Files!");
+        return;
+        }
+       
+        if ("AND".equals(varTerm)){
+               
+            varText = userInterface.textField.getText();   
+            String pattern;
+            //pattern = "(.*)(,*)";
+            pattern = "(.,)";
+            // Create a Pattern object
+            Pattern r = Pattern.compile(pattern);
 
+             // Now create matcher object.
+            Matcher m = r.matcher(varText);
+                
+        try {
+           // initComponents();
+            connection=sqliteConnection2.dbConnector();
+                String query;
+                query = "select FILE_PATH, Status from IndexedFiles ORDER BY FILE_PATH";
+                PreparedStatement pst = null;
+                
+            try {
+                pst = connection.prepareStatement(query);
+            } catch (SQLException ex) {
+                Logger.getLogger(Maintenance.class.getName()).log(Level.SEVERE, null, ex);
+            }
+                ResultSet rs = null;
+            try {
+                rs = pst.executeQuery();
+            } catch (SQLException ex) {
+                Logger.getLogger(Maintenance.class.getName()).log(Level.SEVERE, null, ex);
+            }
+                if (m.find( )) {
+                    
+                userQuery(); 
+               
+                }
+                else {
+                    varText = "";
+                    JOptionPane.showMessageDialog(null,"No Match!");
+                }
+
+               //form table name=FilenameTable
+          FilenameTable.setModel(DbUtils.resultSetToTableModel(rs));
+          
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(Maintenance.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    
+    }
+    
+/*
     static void newquery() throws SQLException {
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         try {
@@ -83,7 +161,7 @@ public class SearchEngine {
                 while (res.next()){
                     fileCount = res.getInt(1);
                 }
-                */
+                
                 //PreparedStatement pst = null;
                 //ResultSet rs = null;
                 PreparedStatement pst = sqliteConnection2.dbConnector().prepareStatement(getNextFile);
@@ -121,10 +199,10 @@ public class SearchEngine {
         }
     }
 
-
+*/
     
 
-    
+}
 
     
 
@@ -140,63 +218,3 @@ public class SearchEngine {
         }
     }
 }
-/*
-        for (File file : listOfFiles) {
-            searchFilePath = file.getAbsolutePath(); //get the path of the next file
-            if (file.isFile()) {
-
-                try {
-                    FileInputStream fstream = new FileInputStream(searchFilePath); // makes sure it's a good path
-                    DataInputStream in = new DataInputStream(fstream); // open the file.
-                    BufferedReader br = new BufferedReader(new InputStreamReader(in)); //buffered reader for the file               
-                    String strLine;
-
-                    while ((strLine = br.readLine()) != null) { //read each line until end of of file
-                        if (strLine.contains(wordToFind)) { //look for designated word.
-                            System.out.println(file.getName()); //print the file name
-                        }
-                    }
-                    in.close(); //close the file loop back to folder and search next file
-                } catch (Exception e) { //try catch required for FileInputStream           
-                    System.err.println("Error: File not found");
-                }
-            } else if (file.isDirectory()) {
-                searchSubFolder(searchFilePath);
-            }
-        }
-    }*/
-/*
-    public static void searchSubFolder(String searchSubFolder) {
-
-        directoryToSearch = searchSubFolder; // public static variable declared before main
-        searchFolder = new File(searchSubFolder); //another public variable but given the argument from method call
-        File[] SubFolderFiles = searchFolder.listFiles(); // array of all files in the sub folder.
-
-        for (File subfile : SubFolderFiles) {
-            // for each file (subfile in SubFolderFiles array
-            String searchSubFolderPath = subfile.getAbsolutePath(); //get the path of the next file                        
-            if (subfile.isFile()) {
-                // if it is a file do this.
-                try {
-                    FileInputStream fstream = new FileInputStream(searchSubFolderPath); // makes sure it's a good path
-                    DataInputStream in = new DataInputStream(fstream); // open the file.
-                    BufferedReader br = new BufferedReader(new InputStreamReader(in)); //buffered reader for the file               
-                    String strLine;
-
-                    while ((strLine = br.readLine()) != null) { //read each line until end of of file
-                        if (strLine.contains(wordToFind)) { //look for designated word.
-                            System.out.println(subfile.getName()); //print the file name
-                        }
-                    }
-                    in.close(); //close the file loop back to folder and search next file            
-                } catch (Exception e) { //try catch required for FileInputStream        
-                    System.err.println("Error: File not found");
-                }
-            } else if (subfile.isDirectory()) {
-                //recursive call of this method to search all sub folders.
-                searchSubFolder(searchSubFolderPath);
-            }
-        }
-    }
-}
-*/
