@@ -3,15 +3,20 @@
  */
 package com.piratehawks.SearchEngine;
 
+import java.awt.Cursor;
 import java.io.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import net.proteanit.sql.DbUtils;
 import org.sqlite.SQLiteConfig;
 import org.sqlite.util.*;
@@ -22,18 +27,22 @@ import org.sqlite.util.*;
  */
 public class SearchEngine {
 
-    public static String directoryToSearch = "C:\\Test\\FilenameDB.sqlite"; //the path to the directory
-   // public static String wordToFind = "Testing"; //the word(s) to find. input a variable later
-   // public static File searchFolder = new File(directoryToSearch);
+    public static String directoryToSearch = "C:\\Test\\IndexedFiles.db"; //the path to the directory
+    static String userSearch = userInterface.textField.getText(); //the word(s) to find. input a variable later
+    public static List<String> listOfFiles = new ArrayList<>(); // array list of all files in directory
+    
+    //File searchFolder = new File(directoryToSearch);
    // public static String searchFilePath = "";
 
-    Connection connection = null;
+    //static Connection connection;
+    static Statement stmt;
+    static JTable FilenameTable = new javax.swing.JTable();
     
     public static void main(String[] args) throws SQLException {
-        //fileSearchMethod(directoryToSearch);
-       
-       JOptionPane.showMessageDialog(null, "This is a test");
-        
+
+       JOptionPane.showMessageDialog(null, "This is a test" + userSearch);
+       newquery();
+       JOptionPane.showMessageDialog(null, listOfFiles);      
     }
 
     /**
@@ -60,23 +69,49 @@ public class SearchEngine {
     }
 */
 
-    private void newquery() {
+    static void newquery() throws SQLException {
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         try {
            // initComponents();
-            connection=sqliteConnection2.dbConnector();
+            sqliteConnection2.dbConnector();
                 String query;
-                query = "select PathName, Status from SearchEngine";
-                PreparedStatement pst = null;
+                int fileIndex = 1;
+                String getNextFile = "SELECT * FROM IndexedFiles";
+                int fileCount = 3;
+                /*
+                ResultSet res = stmt.executeQuery("SELECT COUNT(*) FROM "+ "C:\\Test\\IndexedFiles.db");
+                while (res.next()){
+                    fileCount = res.getInt(1);
+                }
+                */
+                //PreparedStatement pst = null;
+                //ResultSet rs = null;
+                PreparedStatement pst = sqliteConnection2.dbConnector().prepareStatement(getNextFile);
+                ResultSet rs = stmt.executeQuery(getNextFile);
+                
+                while (rs.next())
+                    {
+
+                        String path = rs.getString(3);
+                        listOfFiles.add(path);
+                        fileIndex++;
+                    }
+                
+                query = "SELECT FILE_PATH FROM IndexedFiles";
+                //Cursor cursor = sqliteDatabse.rawquery(query, null);
+               // PreparedStatement pst = null;
+            
                 
             try {
-                pst = connection.prepareStatement(query);
+                pst = sqliteConnection2.dbConnector().prepareStatement(query);
             } catch (SQLException ex) {
                 Logger.getLogger(Maintenance.class.getName()).log(Level.SEVERE, null, ex);
             }
-                ResultSet rs = null;
+                //ResultSet rs = null;
+                
             try {
                 rs = pst.executeQuery();
+                //listOfFiles = rs.getString("FILE_PATH");
             } catch (SQLException ex) {
                 Logger.getLogger(Maintenance.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -85,14 +120,27 @@ public class SearchEngine {
             Logger.getLogger(Maintenance.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-}
+
 
     
 
-    /*
-    public static void fileSearchMethod(String directoryToSearch) {
+    
 
-        File[] listOfFiles = searchFolder.listFiles(); // array list of all files in directory
+    
+
+    
+    public static void fileSearchMethod(String directoryToSearch) throws SQLException {
+
+        
+        try {
+            sqliteConnection2.dbConnector();
+        } 
+        catch (ClassNotFoundException ex) {
+            Logger.getLogger(SearchEngine.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+}
+/*
         for (File file : listOfFiles) {
             searchFilePath = file.getAbsolutePath(); //get the path of the next file
             if (file.isFile()) {
