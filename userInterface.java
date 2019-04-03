@@ -14,11 +14,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import net.proteanit.sql.DbUtils;
-import javax.swing.JButton;
-import java.awt.event.ActionListener;
-import java.util.Enumeration;
-import javax.swing.AbstractButton;
-import javax.swing.ButtonGroup;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.table.DefaultTableModel;
@@ -27,29 +22,20 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Agnes B
  * 3/31/19 Added for AND/OR/ALL search terms,spaces, and (.,) only
+ * 4/2/19 Fixed search condition
  */
 public class userInterface extends javax.swing.JFrame {
     String SearchTerm;  //AND/OR CONDITION
-    String varText;
-    String varTerm;
-    
-     
-    
-    
+    String varText;     // variable
+    String varTerm;     
     Connection connection = null; 
     
     /** Creates new form userInterface */
-    public userInterface() {
-        
-        
+    public userInterface() 
+    {
         initComponents();
-        
-          
-        
-        
-        
     }
-
+       
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -158,7 +144,7 @@ public class userInterface extends javax.swing.JFrame {
 
         buttonGroup1.add(jRadioButton2);
         jRadioButton2.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        jRadioButton2.setSelected(true);
+        jRadioButton2.setSelected(false);
         jRadioButton2.setText("Any of the Search Terms");
         jRadioButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -234,8 +220,8 @@ public class userInterface extends javax.swing.JFrame {
                         .addContainerGap(26, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(andRadioButton, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(28, 28, 28)
+                        .addComponent(andRadioButton, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(46, 46, 46)
                         .addComponent(jRadioButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(28, 28, 28)
                         .addComponent(jRadioButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -292,98 +278,107 @@ public class userInterface extends javax.swing.JFrame {
         // Click button to go to Maintenance Form
         Maintenance maint = new Maintenance();
         maint.setVisible(true);
-
     }//GEN-LAST:event_maintenanceButtonMouseClicked
 
     private void aboutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutButtonActionPerformed
         // TODO add your handling code here:
-        
     JOptionPane.showMessageDialog(null,"Search Engine Version 1-Written by PirateHawks Team");
     }//GEN-LAST:event_aboutButtonActionPerformed
 
     @SuppressWarnings("empty-statement")
     private void andRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_andRadioButtonActionPerformed
-        // Button - All of the Search Terms
-        // TODO add your handling code here:
-        //JOptionPane.showMessageDialog(null,"Database Connection Successful");
+        
          varTerm="AND";
+         
     }//GEN-LAST:event_andRadioButtonActionPerformed
 
-    //private void myFind() {
-    //        if (m.find( )) {
-    //           //System.out.println("Found value: " + m.group(0) );
-     //          //System.out.println("Found value: " + m.group(1) );
-    //           //System.out.println("Found value: " + m.group(2) );
-    //           //System.out.println("MATCH");
-    //           userQuery(); 
-    //           //counter1 = table.getRowCount();
-    //           //System.out.println(counter1);
-    //           
-    //        }else {
-    //           // CLEAR TABLE
-    //            //DefaultTableModel tMOdel = (DefaultTableModel) Filename.getModel();
-    //            //tMOdel.setRowCount(0);
-    //            //Filename.setModel(new DefaultTableModel());
-    //            
-    //            //((DefaultTableModel)jTable3.getModel()).setNumRows(0);
-    //          //System.out.println("NO MATCH"); 
-    //          JOptionPane.showMessageDialog(null,"No Match!");
-    //       }
-   // }
-    
+       
     private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchButtonActionPerformed
-       //test for spaces, and/or/all terms with (.,) conditions        
-       if ("".equals(searchText.getText())){
-            JOptionPane.showMessageDialog(null,"No Matching Files!");
+       // Tested spaces , and . to search with Radio Button for AND/OR/ALL      
+       varText = searchText.getText();
+              
+        if ("".equals(searchText.getText())){
+            JOptionPane.showMessageDialog(null,"Spaces, No Matching Files!");
              return;
         }
-       
-        if ("AND".equals(varTerm)){
-               
-            varText = searchText.getText();   
+            if ("AND".equals(varTerm)){
+            //varText = searchText.getText();   
             String pattern;
-            //pattern = "(.*)(,*)";
-            pattern = "(.,)";
+            pattern = "(.*)(,*)";
             // Create a Pattern object
             Pattern r = Pattern.compile(pattern);
-
-             // Now create matcher object.
+            // Now create matcher object.
+            //Matcher m = r.matcher(varText);
             Matcher m = r.matcher(varText);
-            
-           //myFind(); 
-           
+         
            if (m.find( )) {
                 userQuery(); 
                
            }else {
                 varText = "";
-                JOptionPane.showMessageDialog(null,"No Match!");
+                JOptionPane.showMessageDialog(null,"No Matching Files!");
            }
-       }else if ("OR".equals(varTerm)){
-           
-           JOptionPane.showMessageDialog(null,"ANY OF THE SEARCH TERMS:No Matching Files");
+        }else if ("OR".equals(varTerm)){
+            JOptionPane.showMessageDialog(null,varText);
+            String pattern;
+            pattern = "\\d+\\s+[A-Z\\s]+\\s+[A-Z][A-Za-z]+";
+            Pattern r = Pattern.compile(pattern);
+            // Now create matcher object.
+            //Matcher m = r.matcher(varText);
+            Matcher m = r.matcher(varText);
+            
+           if (m.find( )) {
+                userQuery(); 
+               
+           }else {
+                varText = "";
+                JOptionPane.showMessageDialog(null,"No Matching File!");
+           }            
+            //JOptionPane.showMessageDialog(null,"ANY OF THE SEARCH TERMS:No Matching Files");
            varText = "";
-       }else {
+           
+        }else {
+           // $input_pass=~/^123456$/
+            //varText = searchText.getText();   
+            String pattern;
+            //pattern = vartext.match^(+[a-z])$";
+            pattern =  "+[a-z])$";
+            // Create a Pattern object
+            Pattern r = Pattern.compile(pattern);
+            // Now create matcher object.
+            //Matcher m = r.matcher(varText);
+            Matcher m = r.matcher(varText);
+         
+           if (m.find( )) {
+                userQuery(); 
+               
+           }else {
+                varText = "";
+                JOptionPane.showMessageDialog(null,"No Matching File! ");
+           }           
+           JOptionPane.showMessageDialog(null,varText);            
            JOptionPane.showMessageDialog(null,"EXACT PHRASE: No Matching Files ");
            varText = "";    
         }
                   
     }//GEN-LAST:event_searchButtonActionPerformed
 
-    private void jRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton2ActionPerformed
-        
-        varTerm="OR";
-        
+    private void cleartable(){
+        //Clears all rows in jTable
         Filename.setModel(new DefaultTableModel());
         searchText.setText("");
-        varText = "";
+    }
+    
+    private void jRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton2ActionPerformed
+        
+        varTerm = "OR";
+        cleartable();
+        
     }//GEN-LAST:event_jRadioButton2ActionPerformed
 
     private void jRadioButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton3ActionPerformed
-        varTerm="ALL";
-                
-        Filename.setModel(new DefaultTableModel());
-        searchText.setText("");  
+        varTerm = "ALL";
+        cleartable();  
         
     }//GEN-LAST:event_jRadioButton3ActionPerformed
 
@@ -419,13 +414,10 @@ public class userInterface extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
             new userInterface().setVisible(true);
-            
-             
-            
+                 
         });
     }
-    
-    
+        
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable Filename;
     private java.awt.Button aboutButton;
@@ -454,8 +446,7 @@ public class userInterface extends javax.swing.JFrame {
     private void userQuery() {
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         try {
-           // initComponents();
-            connection=sqliteConnection2.dbConnector();
+                connection=sqliteConnection2.dbConnector();
                 String query;
                 query = "select PathName, Status from SearchEngine ORDER BY PathName";
                 PreparedStatement pst = null;
@@ -468,6 +459,7 @@ public class userInterface extends javax.swing.JFrame {
                 ResultSet rs = null;
             try {
                 rs = pst.executeQuery();
+             
             } catch (SQLException ex) {
                 Logger.getLogger(Maintenance.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -478,10 +470,4 @@ public class userInterface extends javax.swing.JFrame {
         }
     
     }
-
-    
-   
-    
-   
-
 }
