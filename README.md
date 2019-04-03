@@ -1,5 +1,5 @@
 # Pirate-Hawks
-# Group Members: Sam, Myrlene, and Agnes
+# Group Members: Sam, Myrlene, Agnes, and Christopher
 
 Notes:
 
