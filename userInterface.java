@@ -373,6 +373,31 @@ public class userInterface extends javax.swing.JFrame {
         
         varTerm = "OR";
         cleartable();
+         HashSet<String> set= new HashSet<String>();       
+
+  for (int filepostion=0;Filename.hasNext();filepostion++) {
+
+        set.add(Filename.next().trim());
+
+    }
+
+     Filename.close();
+
+  //if statement that tells user no files were match
+
+    if(filename.equals(",") ||filename.equals(" "))
+
+        {
+
+        textField.setText("no files are matched");
+
+        }//shows the file name absolute path
+
+    else(set.add(filename.next().trim())) {
+
+        textField.setText(filename.getAbsolutePath());
+
+        }
         
     }//GEN-LAST:event_jRadioButton2ActionPerformed
 
